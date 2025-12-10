@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>100 Days Activities Explorer</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ocean: 'rgb(var(--rgb-ocean) / <alpha-value>)',
+              brandRed: 'rgb(var(--rgb-brand-red) / <alpha-value>)',
+              brandRedHover: 'rgb(var(--rgb-brand-red-hover) / <alpha-value>)',
+              brandWhite: 'rgb(var(--rgb-brand-white) / <alpha-value>)',
+              brandBlack: 'rgb(var(--rgb-brand-black) / <alpha-value>)',
+              
+              brandCream: 'rgb(var(--rgb-brand-cream) / <alpha-value>)',
+              brandGrey: 'rgb(var(--rgb-brand-grey) / <alpha-value>)',
+              
+              brandLightRed: 'rgb(var(--rgb-brand-light-red) / <alpha-value>)',
+              brandMutedRed: 'rgb(var(--rgb-brand-muted-red) / <alpha-value>)',
+              brandDarkRed: 'rgb(var(--rgb-brand-dark-red) / <alpha-value>)',
+              brandDeep: 'rgb(var(--rgb-brand-deep) / <alpha-value>)',
+
+              // Secondary Palette (Remapped to shades of the red palette)
+              brandBlue: 'rgb(var(--rgb-brand-blue) / <alpha-value>)',
+              brandGold: 'rgb(var(--rgb-brand-gold) / <alpha-value>)',
+              brandPurple: 'rgb(var(--rgb-brand-purple) / <alpha-value>)',
+              brandGreen: 'rgb(var(--rgb-brand-green) / <alpha-value>)',
+            },
+            fontFamily: {
+              sans: ['Nunito', 'sans-serif'],
+              heading: ['Impact', 'Haettenschweiler', 'Arial Narrow Bold', 'sans-serif'],
+            },
+            animation: {
+              'ripple': 'ripple 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+            },
+            keyframes: {
+              ripple: {
+                '0%': { transform: 'scale(1)', opacity: '0.8' },
+                '100%': { transform: 'scale(4)', opacity: '0' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      /* Hide scrollbar */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* Theming Variables (RGB format for Tailwind opacity support) */
+      /* Palette: #fdf3f3, #fde3e4, #fbcdcf, #f7aaae, #f1787e, #e64d54, #d22d35, #b1242b, #922227, #420d10 */
+      :root {
+        /* Default (Dark Mode) */
+        --rgb-ocean: 66 13 16;         /* #420d10 */
+        --rgb-brand-red: 230 77 84;    /* #e64d54 */
+        --rgb-brand-red-hover: 210 45 53; /* #d22d35 */
+        --rgb-brand-white: 253 243 243; /* #fdf3f3 */
+        --rgb-brand-black: 66 13 16;   /* #420d10 (Background) */
+        --rgb-brand-cream: 253 243 243; /* #fdf3f3 (Text) */
+        --rgb-brand-grey: 247 170 174; /* #f7aaae (Muted Text) */
+        --rgb-brand-light-red: 247 170 174; /* #f7aaae */
+        --rgb-brand-muted-red: 251 205 207; /* #fbcdcf */
+        --rgb-brand-dark-red: 177 36 43;    /* #b1242b */
+        --rgb-brand-deep: 146 34 39;    /* #922227 (Panel/Surface) */
+
+        /* Secondary Palette Mapped to Red Palette for Dark Mode */
+        --rgb-brand-blue: 241 120 126;  /* #f1787e (Salmon) */
+        --rgb-brand-gold: 253 227 228;  /* #fde3e4 (Light Pink) */
+        --rgb-brand-purple: 146 34 39;  /* #922227 (Maroon) */
+        --rgb-brand-green: 251 205 207; /* #fbcdcf (Pale Pink) */
+      }
+
+      [data-theme="light"] {
+        /* Light Mode Overrides */
+        --rgb-ocean: 253 243 243;      /* #fdf3f3 */
+        --rgb-brand-red: 230 77 84;    /* #e64d54 */
+        --rgb-brand-red-hover: 210 45 53; /* #d22d35 */
+        --rgb-brand-white: 66 13 16;   /* #420d10 (Inverse Text/Icon) */
+        --rgb-brand-black: 253 243 243; /* #fdf3f3 (Background) */
+        --rgb-brand-cream: 66 13 16;   /* #420d10 (Text) */
+        --rgb-brand-grey: 177 36 43;   /* #b1242b (Muted Text) */
+        --rgb-brand-light-red: 210 45 53; /* #d22d35 */
+        --rgb-brand-muted-red: 241 120 126; /* #f1787e */
+        --rgb-brand-dark-red: 247 170 174; /* #f7aaae (Borders) */
+        --rgb-brand-deep: 253 227 228; /* #fde3e4 (Panel Surface - distinct from bg) */
+
+        /* Secondary Palette Mapped to Red Palette for Light Mode */
+        --rgb-brand-blue: 210 45 53;    /* #d22d35 */
+        --rgb-brand-gold: 241 120 126;  /* #f1787e */
+        --rgb-brand-purple: 146 34 39;  /* #922227 */
+        --rgb-brand-green: 177 36 43;   /* #b1242b */
+      }
+      
+      body {
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "d3": "https://aistudiocdn.com/d3@^7.9.0",
+    "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/",
+    "react-markdown": "https://aistudiocdn.com/react-markdown@^10.1.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.31.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-brandBlack text-brandCream overflow-hidden antialiased">
+    <div id="root" class="h-screen w-screen flex flex-col"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

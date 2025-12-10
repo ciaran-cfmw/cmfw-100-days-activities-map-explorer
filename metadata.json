@@ -1,0 +1,7 @@
+{
+  "name": "Child Marriage Free World Explorer",
+  "description": "Interactive map tracking the Global Pledging Week to End Child Marriage. Explore activities from schools, communities, and governments worldwide.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
