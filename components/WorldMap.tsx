@@ -202,7 +202,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
 
     // Define Zoom Behavior
     const zoom = d3.zoom<SVGSVGElement, unknown>()
-      .scaleExtent([1, 8])
+      .scaleExtent([1, 12])
       .translateExtent([[0, 0], [dimensions.width, dimensions.height]])
       .on('zoom', (event) => {
         setTransform(event.transform);
@@ -330,7 +330,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
 
       const effectiveWidth = dimensions.width;
       const effectiveHeight = dimensions.height;
-      const scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / effectiveWidth, dy / effectiveHeight)));
+      const scale = Math.max(1, Math.min(12, 0.9 / Math.max(dx / effectiveWidth, dy / effectiveHeight)));
 
       const svg = d3.select(svgRef.current);
       svg.interrupt();
@@ -640,8 +640,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
           <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
             className={`flex items-center space-x-2 px-4 py-2 rounded-full shadow-2xl border backdrop-blur-xl transition-all active:scale-95 ${isFilterOpen || selectedTypes.size > 0
-                ? 'bg-brandRed text-brandBlack border-brandRed'
-                : 'bg-brandWhite/10 text-brandCream border-brandWhite/20 hover:bg-brandWhite/20 hover:border-brandWhite/40 hover:text-brandWhite'
+              ? 'bg-brandRed text-brandBlack border-brandRed'
+              : 'bg-brandWhite/10 text-brandCream border-brandWhite/20 hover:bg-brandWhite/20 hover:border-brandWhite/40 hover:text-brandWhite'
               }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -661,8 +661,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
                 <button
                   onClick={() => setSelectedTypes(new Set())}
                   className={`w-full text-left px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${selectedTypes.size === 0
-                      ? 'bg-brandRed/20 text-brandRed'
-                      : 'text-brandGrey hover:bg-brandRed/10 hover:text-brandCream'
+                    ? 'bg-brandRed/20 text-brandRed'
+                    : 'text-brandGrey hover:bg-brandRed/10 hover:text-brandCream'
                     }`}
                 >
                   Show All
@@ -757,8 +757,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
         <div className="relative">
           {locationMsg && (
             <div className={`absolute right-14 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-medium shadow-2xl border backdrop-blur-xl animate-in fade-in slide-in-from-right-2 z-50 ${locationMsg.type === 'error'
-                ? 'bg-red-900/90 text-red-100 border-red-700/50'
-                : 'bg-brandDeep/90 text-brandCream border-brandWhite/20'
+              ? 'bg-red-900/90 text-red-100 border-red-700/50'
+              : 'bg-brandDeep/90 text-brandCream border-brandWhite/20'
               }`}>
               {locationMsg.text}
             </div>
