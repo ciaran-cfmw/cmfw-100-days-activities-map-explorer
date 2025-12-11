@@ -330,7 +330,7 @@ const App: React.FC = () => {
         { label: 'Activity Type', value: activity.type.split(' ')[0], className: 'text-brandBlue' }, // First word of type
         { label: 'Impact Reach', value: `~${mockReach} people`, className: 'text-brandRed' },
         { label: 'Date', value: 'Oct 2025', className: 'text-brandCream' },
-        { label: 'Phase', value: 'Week 1', className: 'text-brandGold' },
+        { label: 'Day', value: 'Week 1', className: 'text-brandGold' },
       ]
     });
 
