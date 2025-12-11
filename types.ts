@@ -24,6 +24,7 @@ export interface Activity {
   type: string;
   coordinates: [number, number]; // [lon, lat]
   description: string;
+  day: number; // Campaign day (1-14)
 }
 
 export interface StatItem {
