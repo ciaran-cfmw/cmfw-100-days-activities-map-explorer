@@ -4,7 +4,6 @@ import { WorldMap } from './components/WorldMap';
 import { InfoPanel } from './components/InfoPanel';
 import { SearchBar } from './components/SearchBar';
 import { ThemeToggle } from './components/ThemeToggle';
-import { streamCountryInfo, streamActivityInfo } from './services/geminiService';
 import { GeoJsonCollection, GeoJsonFeature, SelectionSummary, Activity } from './types';
 
 // GeoJSON Data Source
@@ -325,12 +324,22 @@ const App: React.FC = () => {
     const activeSchools = Math.floor((nameHash % 100) * 1.5) + 12;
     const pledges = activeSchools * (Math.floor(Math.random() * 50) + 100);
 
+    // Placeholder content - to be replaced by CMS
+    const placeholderContent = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+
+**Campaign Highlights:**
+- Community engagement initiatives
+- Educational outreach programs
+- Partnership with local organizations
+
+*This content will be managed through the CMS.*`;
+
     setSelectedItem({
       type: 'country',
       name: name,
       id: isoCode,
-      content: '',
-      loading: true,
+      content: placeholderContent,
+      loading: false,
       stats: [
         { label: 'Active Schools', value: activeSchools.toString(), className: 'text-brandGold' },
         { label: 'Total Pledges', value: pledges.toLocaleString(), className: 'text-brandRed' },
@@ -338,45 +347,44 @@ const App: React.FC = () => {
         { label: 'Region', value: 'Global South', className: 'text-brandCream' }, // Placeholder
       ]
     });
-
-    streamCountryInfo(name, (chunk) => {
-      setSelectedItem(prev => {
-        if (!prev || prev.name !== name) return prev;
-        return { ...prev, content: prev.content + chunk, loading: false };
-      });
-    }).catch(err => {
-      console.error(err);
-      setSelectedItem(prev => prev ? { ...prev, loading: false, content: prev.content + "\nError fetching data." } : null);
-    });
   };
 
   const handleActivityClick = (activity: Activity) => {
     const mockReach = Math.floor(Math.random() * 500) + 50;
+
+    // Placeholder content - to be replaced by CMS
+    const placeholderContent = `**Activity Snapshot:**
+> ${activity.description}
+
+---
+
+**Campaign Update**
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. This activity represents a significant milestone in our ongoing efforts to create lasting change in the community.
+
+Through collaborative partnerships and dedicated advocacy, we are working to ensure every child has access to education and protection from harmful practices.
+
+**Impact & Reach:**
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+**Call to Action:**
+Join us in making a difference. Together, we can build a world where every child is free to learn, grow, and thrive.
+
+*This content will be managed through the CMS.*`;
 
     setSelectedItem({
       type: 'activity',
       name: activity.title,
       id: activity.id,
       subtitle: `${activity.type}`,
-      // Pre-fill content with the description formatted as a blockquote, then stream the AI log
-      content: `**Activity Snapshot:**\n> ${activity.description}\n\n---\n\n`,
-      loading: true,
+      content: placeholderContent,
+      loading: false,
       stats: [
         { label: 'Activity Type', value: activity.type.split(' ')[0], className: 'text-brandBlue' }, // First word of type
         { label: 'Impact Reach', value: `~${mockReach} people`, className: 'text-brandRed' },
         { label: 'Date', value: 'Oct 2025', className: 'text-brandCream' },
         { label: 'Day', value: `Day ${activity.day}`, className: 'text-brandGold' },
       ]
-    });
-
-    streamActivityInfo(activity.title, activity.description, (chunk) => {
-      setSelectedItem(prev => {
-        if (!prev || prev.id !== activity.id) return prev;
-        return { ...prev, content: prev.content + chunk, loading: false };
-      });
-    }).catch(err => {
-      console.error(err);
-      setSelectedItem(prev => prev ? { ...prev, loading: false, content: prev.content + "\n(Unable to retrieve campaign details at this time.)" } : null);
     });
   };
 
