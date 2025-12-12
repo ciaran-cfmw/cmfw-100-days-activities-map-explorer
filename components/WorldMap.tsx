@@ -301,7 +301,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
       // Ensure initial transform is set
       svg.call(zoom.transform, transformRef.current);
     }
-  }, [viewState, dimensions, projection]);
+  }, [viewState, dimensions]);
 
 
   // ------------------------------------------------------------------
