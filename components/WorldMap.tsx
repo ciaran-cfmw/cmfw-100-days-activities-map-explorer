@@ -200,47 +200,34 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
 
-    // Define Zoom Behavior for Flat Map
-    const zoom = d3.zoom<SVGSVGElement, unknown>()
-      .scaleExtent([1, 12])
-      .translateExtent([[0, 0], [dimensions.width, dimensions.height]])
-      .on('zoom', (event) => {
-        setTransform(event.transform);
-        transformRef.current = event.transform;
-      });
+    // ------------------------------------------------------------------
+    // Event Binding & Interaction Logic
+    // ------------------------------------------------------------------
 
-    // Apply behaviors based on view
+    // Clear any existing handlers to prevent duplicates/ghosts
+    svg.on(".zoom", null);
+    svg.on(".drag", null);
+
+    // Common Zoom Behavior Config
+    // We create separate behaviors for Globe vs Flat to handle them cleanly
+
     if (viewState === ViewState.GLOBE) {
-      // Clear any previous handlers
-      svg.on(".zoom", null);
-      svg.on(".drag", null);
-
-      // For Globe: Support both drag (rotation) and pinch-zoom
-      // Simplified approach: let zoom handle all touch events, check count inside handler
+      // --- GLOBE INTERACTION ---
 
       const globeZoom = d3.zoom<SVGSVGElement, unknown>()
         .scaleExtent([1, 12])
         .filter((event) => {
-          // Allow all touch events and block mouse wheel
+          // Prevent mouse wheel zooming on globe (optional decision, usually good to keep rotation as primary mouse action)
           if (event.type === 'wheel') return false;
           return true;
         })
-        .on('start', (event) => {
-          // Track if this is a multi-touch gesture
-          if (event.sourceEvent && event.sourceEvent.type.includes('touch')) {
-            const touches = (event.sourceEvent as TouchEvent).touches;
-            if (touches && touches.length >= 2) {
-              // Multi-touch zoom starting
-              isDraggingRef.current = false;
-            }
-          }
-        })
         .on('zoom', (event) => {
-          // Only handle zoom for multi-touch gestures
+          // For Globe, we ONLY care about the scale (k) from standard gestures
+          // We use D3's accurate multi-touch pinch detection
           if (event.sourceEvent && event.sourceEvent.type.includes('touch')) {
+            // Check if it's a pinch (2+ fingers)
             const touches = (event.sourceEvent as TouchEvent).touches;
             if (touches && touches.length >= 2) {
-              // Multi-touch: update projection scale
               const baseScale = Math.min(dimensions.width, dimensions.height) / 2.5;
               const newScale = baseScale * event.transform.k;
               projection.scale(newScale);
@@ -249,22 +236,21 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
           }
         });
 
-      // Store globe zoom behavior in ref for button controls
-      zoomBehaviorRef.current = globeZoom;
-
-      // Globe Manual Drag (Rotation) - only for single touch/mouse
-      const drag = d3.drag<SVGSVGElement, unknown>()
+      // Drag Behavior (Rotation)
+      const globeDrag = d3.drag<SVGSVGElement, unknown>()
         .filter((event) => {
-          // Only allow single touch or mouse
+          // Allow drag only for Mouse OR Single-touch
+          // This allows the Zoom behavior (above) to handle multi-touch pinches
           if (event.type.includes('touch')) {
             const touches = (event as TouchEvent).touches;
+            // Only drag if exactly 1 finger
             return touches && touches.length === 1;
           }
-          return true; // Allow mouse
+          return true; // Mouse is always fine
         })
         .on('start', () => {
           isDraggingRef.current = true;
-          svg.interrupt();
+          svg.interrupt(); // Stop animations
           isTransitioningRef.current = false;
         })
         .on('drag', (event) => {
@@ -283,30 +269,44 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
           isDraggingRef.current = false;
         });
 
-      // Apply both behaviors
+      // Bind Behaviors
+
+      zoomBehaviorRef.current = globeZoom;
       svg.call(globeZoom);
+      // Initialize to identity so the first pinch starts from k=1
       svg.call(globeZoom.transform, d3.zoomIdentity);
 
-      // Apply drag after a tiny delay to ensure zoom is fully initialized
-      setTimeout(() => {
-        if (svgRef.current && viewState === ViewState.GLOBE) {
-          d3.select(svgRef.current).call(drag);
-        }
-      }, 0);
+      svg.call(globeDrag);
+
     } else {
-      // Flat Map: Full zoom/pan support with pinch/spread
-      svg.on(".drag", null);
-      svg.on(".zoom", null);
+      // --- FLAT MAP INTERACTION ---
+      // Standard D3 Zoom/Pan
 
-      // Store flat map zoom behavior in ref
-      zoomBehaviorRef.current = zoom;
+      const flatZoom = d3.zoom<SVGSVGElement, unknown>()
+        .scaleExtent([1, 12])
+        .translateExtent([[0, 0], [dimensions.width, dimensions.height]])
+        .on('zoom', (event) => {
+          setTransform(event.transform);
+          transformRef.current = event.transform;
+        });
 
-      // Ensure zoom behavior supports all touch gestures
-      svg.call(zoom);
+      zoomBehaviorRef.current = flatZoom;
+      svg.call(flatZoom);
 
-      // Ensure initial transform is set
-      svg.call(zoom.transform, transformRef.current);
+      // Restore previous transform state so we don't reset view when switching back
+      if (transformRef.current) {
+        svg.call(flatZoom.transform, transformRef.current);
+      }
     }
+
+    // Cleanup function to remove listeners when viewState changes or component unmounts
+    return () => {
+      if (svgRef.current) {
+        const s = d3.select(svgRef.current);
+        s.on(".zoom", null);
+        s.on(".drag", null);
+      }
+    };
   }, [viewState, dimensions]);
 
 
@@ -845,6 +845,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
         className="cursor-move block"
         style={{ touchAction: 'none' }}
       >
+        {/* Interaction Layer - Catches events on empty space */}
+        <rect width={dimensions.width} height={dimensions.height} fill="transparent" />
+
         {/* ... Defs ... */}
         <defs>
           <radialGradient id="globeGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
