@@ -211,6 +211,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
 
     // Apply behaviors based on view
     if (viewState === ViewState.GLOBE) {
+      // Clear any previous handlers
+      svg.on(".zoom", null);
+      svg.on(".drag", null);
+
       // For Globe: Support both drag (rotation) and pinch-zoom
       // Pinch/Spread gestures for zoom on all touch devices
 
@@ -239,9 +243,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
 
       // Store globe zoom behavior in ref for button controls
       zoomBehaviorRef.current = globeZoom;
-
-      // Apply zoom behavior for pinch/spread gestures
-      svg.call(globeZoom);
 
       // Globe Manual Drag (Rotation) - works with single touch
       const drag = d3.drag<SVGSVGElement, unknown>()
@@ -275,10 +276,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
           isDraggingRef.current = false;
         });
 
+      // IMPORTANT: Apply zoom BEFORE drag to ensure pinch gestures are captured first
+      svg.call(globeZoom);
       svg.call(drag);
     } else {
       // Flat Map: Full zoom/pan support with pinch/spread
       svg.on(".drag", null);
+      svg.on(".zoom", null);
 
       // Store flat map zoom behavior in ref
       zoomBehaviorRef.current = zoom;
