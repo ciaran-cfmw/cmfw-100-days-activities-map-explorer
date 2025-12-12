@@ -200,7 +200,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
 
-    // Define Zoom Behavior
+    // Define Zoom Behavior for Flat Map
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([1, 12])
       .translateExtent([[0, 0], [dimensions.width, dimensions.height]])
@@ -208,8 +208,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
         setTransform(event.transform);
         transformRef.current = event.transform;
       });
-
-    zoomBehaviorRef.current = zoom;
 
     // Apply behaviors based on view
     if (viewState === ViewState.GLOBE) {
@@ -238,6 +236,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
           }
           return false; // Block mouse wheel on globe
         });
+
+      // Store globe zoom behavior in ref for button controls
+      zoomBehaviorRef.current = globeZoom;
 
       // Apply zoom behavior for pinch/spread gestures
       svg.call(globeZoom);
@@ -278,6 +279,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
     } else {
       // Flat Map: Full zoom/pan support with pinch/spread
       svg.on(".drag", null);
+
+      // Store flat map zoom behavior in ref
+      zoomBehaviorRef.current = zoom;
 
       // Ensure zoom behavior supports all touch gestures
       svg.call(zoom);
