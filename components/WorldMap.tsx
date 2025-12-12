@@ -216,52 +216,59 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
       svg.on(".drag", null);
 
       // For Globe: Support both drag (rotation) and pinch-zoom
-      // Pinch/Spread gestures for zoom on all touch devices
+      // Simplified approach: let zoom handle all touch events, check count inside handler
 
       const globeZoom = d3.zoom<SVGSVGElement, unknown>()
-        .scaleExtent([1, 12]) // Match flat map zoom range
-        .on('zoom', (event) => {
-          // Handle zoom/scale for touch events (pinch/spread)
+        .scaleExtent([1, 12])
+        .filter((event) => {
+          // Allow all touch events and block mouse wheel
+          if (event.type === 'wheel') return false;
+          return true;
+        })
+        .on('start', (event) => {
+          // Track if this is a multi-touch gesture
           if (event.sourceEvent && event.sourceEvent.type.includes('touch')) {
-            // For touch events (pinch/spread), update the projection scale
-            const baseScale = Math.min(dimensions.width, dimensions.height) / 2.5;
-            const newScale = baseScale * event.transform.k;
-            projection.scale(newScale);
-            setTick(t => t + 1);
+            const touches = (event.sourceEvent as TouchEvent).touches;
+            if (touches && touches.length >= 2) {
+              // Multi-touch zoom starting
+              isDraggingRef.current = false;
+            }
           }
         })
-        .filter((event) => {
-          // Allow zoom on multi-touch gestures (2+ fingers = pinch/spread)
-          // Block single-touch to avoid conflict with drag rotation
-          if (event.type === 'touchstart' || event.type === 'touchmove' || event.type === 'touchend') {
-            const touches = (event as TouchEvent).touches;
-            // Only allow if 2 or more touches (pinch/spread gesture)
-            return touches && touches.length >= 2;
+        .on('zoom', (event) => {
+          // Only handle zoom for multi-touch gestures
+          if (event.sourceEvent && event.sourceEvent.type.includes('touch')) {
+            const touches = (event.sourceEvent as TouchEvent).touches;
+            if (touches && touches.length >= 2) {
+              // Multi-touch: update projection scale
+              const baseScale = Math.min(dimensions.width, dimensions.height) / 2.5;
+              const newScale = baseScale * event.transform.k;
+              projection.scale(newScale);
+              setTick(t => t + 1);
+            }
           }
-          return false; // Block mouse wheel on globe
         });
 
       // Store globe zoom behavior in ref for button controls
       zoomBehaviorRef.current = globeZoom;
 
-      // Globe Manual Drag (Rotation) - works with single touch
+      // Globe Manual Drag (Rotation) - only for single touch/mouse
       const drag = d3.drag<SVGSVGElement, unknown>()
         .filter((event) => {
-          // Only allow drag on single touch or mouse
+          // Only allow single touch or mouse
           if (event.type.includes('touch')) {
             const touches = (event as TouchEvent).touches;
-            return !touches || touches.length === 1;
+            return touches && touches.length === 1;
           }
-          return true; // Allow mouse drag
+          return true; // Allow mouse
         })
         .on('start', () => {
           isDraggingRef.current = true;
-          svg.interrupt(); // Stop auto-rotation or transitions
+          svg.interrupt();
           isTransitioningRef.current = false;
         })
         .on('drag', (event) => {
           const rotate = projection.rotate();
-          // Sensitivity factor
           const k = 75 / projection.scale();
           const nextRotate: [number, number, number] = [
             rotate[0] + event.dx * k,
@@ -276,12 +283,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
           isDraggingRef.current = false;
         });
 
-      // IMPORTANT: Apply zoom BEFORE drag to ensure pinch gestures are captured first
+      // Apply both behaviors
       svg.call(globeZoom);
-
-      // Initialize zoom transform to identity (scale 1) for proper gesture detection
       svg.call(globeZoom.transform, d3.zoomIdentity);
-
       svg.call(drag);
     } else {
       // Flat Map: Full zoom/pan support with pinch/spread
