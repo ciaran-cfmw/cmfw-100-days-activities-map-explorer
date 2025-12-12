@@ -278,6 +278,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
 
       // IMPORTANT: Apply zoom BEFORE drag to ensure pinch gestures are captured first
       svg.call(globeZoom);
+
+      // Initialize zoom transform to identity (scale 1) for proper gesture detection
+      svg.call(globeZoom.transform, d3.zoomIdentity);
+
       svg.call(drag);
     } else {
       // Flat Map: Full zoom/pan support with pinch/spread
