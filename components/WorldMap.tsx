@@ -40,14 +40,35 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
     height: typeof window !== 'undefined' ? window.innerHeight : 600
   });
 
+  // Helper function to determine initial zoom level based on device
+  const getInitialZoomLevel = () => {
+    if (typeof window === 'undefined') return 1;
+    const width = window.innerWidth;
+
+    // Mobile: < 768px -> 4.7x
+    if (width < 768) return 4.7;
+    // Tablet: 768px - 1024px -> 3x
+    if (width < 1024) return 3;
+    // Desktop: >= 1024px -> 1.7x
+    return 1.7;
+  };
+
   // View State Management
   const [viewState, setViewState] = useState<ViewState>(ViewState.GLOBE);
 
-  // Transform state for Flat Map Zoom/Pan
-  const [transform, setTransform] = useState<d3.ZoomTransform>(d3.zoomIdentity);
+  // Transform state for Flat Map Zoom/Pan - initialize with device-specific zoom
+  const [transform, setTransform] = useState<d3.ZoomTransform>(
+    typeof window !== 'undefined'
+      ? d3.zoomIdentity.scale(getInitialZoomLevel())
+      : d3.zoomIdentity
+  );
 
   // Mutable state for D3 integration
-  const transformRef = useRef<d3.ZoomTransform>(d3.zoomIdentity);
+  const transformRef = useRef<d3.ZoomTransform>(
+    typeof window !== 'undefined'
+      ? d3.zoomIdentity.scale(getInitialZoomLevel())
+      : d3.zoomIdentity
+  );
   const rotationRef = useRef<[number, number, number]>([0, 0, 0]);
   const isDraggingRef = useRef(false);
   const isTransitioningRef = useRef(false);
