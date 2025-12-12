@@ -286,7 +286,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
       // Apply both behaviors
       svg.call(globeZoom);
       svg.call(globeZoom.transform, d3.zoomIdentity);
-      svg.call(drag);
+
+      // Apply drag after a tiny delay to ensure zoom is fully initialized
+      setTimeout(() => {
+        if (svgRef.current && viewState === ViewState.GLOBE) {
+          d3.select(svgRef.current).call(drag);
+        }
+      }, 0);
     } else {
       // Flat Map: Full zoom/pan support with pinch/spread
       svg.on(".drag", null);
