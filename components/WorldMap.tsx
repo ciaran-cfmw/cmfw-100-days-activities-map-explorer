@@ -214,14 +214,14 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
     // Apply behaviors based on view
     if (viewState === ViewState.GLOBE) {
       // For Globe: Support both drag (rotation) and pinch-zoom
-      // We'll use a custom zoom behavior that only handles scaling, not translation
+      // Pinch/Spread gestures for zoom on all touch devices
 
       const globeZoom = d3.zoom<SVGSVGElement, unknown>()
         .scaleExtent([1, 12]) // Match flat map zoom range
         .on('zoom', (event) => {
-          // Only handle zoom/scale, not translation
+          // Handle zoom/scale for touch events (pinch/spread)
           if (event.sourceEvent && event.sourceEvent.type.includes('touch')) {
-            // For touch events (pinch), update the projection scale
+            // For touch events (pinch/spread), update the projection scale
             const baseScale = Math.min(dimensions.width, dimensions.height) / 2.5;
             const newScale = baseScale * event.transform.k;
             projection.scale(newScale);
@@ -229,16 +229,29 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
           }
         })
         .filter((event) => {
-          // Only allow zoom on touch events (pinch), not mouse wheel
-          // This prevents conflict with drag rotation
-          return event.type === 'touchstart' || event.type === 'touchmove' || event.type === 'touchend';
+          // Allow zoom on multi-touch gestures (2+ fingers = pinch/spread)
+          // Block single-touch to avoid conflict with drag rotation
+          if (event.type === 'touchstart' || event.type === 'touchmove' || event.type === 'touchend') {
+            const touches = (event as TouchEvent).touches;
+            // Only allow if 2 or more touches (pinch/spread gesture)
+            return touches && touches.length >= 2;
+          }
+          return false; // Block mouse wheel on globe
         });
 
-      // Apply zoom behavior for pinch gestures
+      // Apply zoom behavior for pinch/spread gestures
       svg.call(globeZoom);
 
-      // Globe Manual Drag (Rotation) - works alongside pinch zoom
+      // Globe Manual Drag (Rotation) - works with single touch
       const drag = d3.drag<SVGSVGElement, unknown>()
+        .filter((event) => {
+          // Only allow drag on single touch or mouse
+          if (event.type.includes('touch')) {
+            const touches = (event as TouchEvent).touches;
+            return !touches || touches.length === 1;
+          }
+          return true; // Allow mouse drag
+        })
         .on('start', () => {
           isDraggingRef.current = true;
           svg.interrupt(); // Stop auto-rotation or transitions
@@ -263,8 +276,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({ data, activities, onCountryC
 
       svg.call(drag);
     } else {
-      // Flat Map Zoom/Pan
+      // Flat Map: Full zoom/pan support with pinch/spread
       svg.on(".drag", null);
+
+      // Ensure zoom behavior supports all touch gestures
       svg.call(zoom);
 
       // Ensure initial transform is set
