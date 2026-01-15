@@ -1,57 +1,77 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Child Marriage Free World - 100 Days of Action 🌍
 
-# Run and deploy your AI Studio app
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-19.0-blue)
+![Vite](https://img.shields.io/badge/Vite-6.0-purple)
+![Supabase](https://img.shields.io/badge/Supabase-Database-green)
 
-This contains everything you need to run your app locally.
+An interactive, data-driven 3D map visualizing the global impact of the **100 Days of Action** campaign. This application empowers users to explore grassroots activities, school pledges, and community events dedicated to ending child marriage worldwide.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1WYQzvGB9pmPLVZlTBIBIJ8kZvoI5A_Y2
+![App Preview](https://placehold.co/1200x600/1a1a1a/ffffff?text=Interactive+Map+Preview)
 
-## Run Locally
+## ✨ Features
 
-**Prerequisites:**  Node.js
+- **3D Globe & Flat Map Projection:** Seamless transition between interactive globe and detailed flat map views (built with D3.js).
+- **Live Activity Tracking:** Real-time impact metrics for school pledges, community awareness, and faith leader actions.
+- **Country Deep Dives:** Detailed statistics, campaign highlights, and stories from specific regions.
+- **Admin Portal:** Secure dashboard for campaign managers to approve/reject user-submitted activities.
+- **Performance Optimized:** Lazy-loaded modules, TopoJSON compression (64% smaller maps), and gzipped assets for fast global access.
+- **Dynamic Theming:** "Brand Red" and "Ocean Blue" modes supporting the campaign's visual identity.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛠️ Tech Stack
 
-## Deploy to Netlify
+- **Frontend:** React 19, TypeScript, Tailwind CSS
+- **Visualization:** D3.js (v7), TopoJSON
+- **Build Tool:** Vite
+- **Backend / Database:** Supabase (PostgreSQL + Auth)
+- **Forms:** Tally Integration
 
-### Step 1: Push to GitHub
+## 🚀 Getting Started
 
-1. Create a new repository on [GitHub](https://github.com/new)
-2. Add and commit your code:
+### Prerequisites
+- Node.js (v18+)
+- Docker (for local Supabase)
+
+### Installation
+
+1. **Clone the repository**
    ```bash
-   git add .
-   git commit -m "Initial commit"
+   git clone https://github.com/your-org/100-days-activities-explorer.git
+   cd 100-days-activities-explorer
    ```
-3. Push to GitHub:
+
+2. **Install dependencies**
    ```bash
-   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-   git branch -M main
-   git push -u origin main
+   npm install
    ```
 
-### Step 2: Deploy on Netlify
+3. **Start local Supabase**
+   ```bash
+   supabase start
+   ```
 
-1. Go to [Netlify](https://app.netlify.com/) and sign in
-2. Click "Add new site" → "Import an existing project"
-3. Choose "GitHub" and authorize Netlify to access your repositories
-4. Select your repository
-5. Configure build settings (should auto-detect from `netlify.toml`):
-   - **Build command:** `npm run build`
-   - **Publish directory:** `dist`
-6. Add environment variables:
-   - Click "Show advanced" → "New variable"
-   - Add `GEMINI_API_KEY` with your API key value
-7. Click "Deploy site"
+4. **Run development server**
+   ```bash
+   npm run dev
+   ```
 
-Your app will be live at a Netlify URL (e.g., `https://your-app-name.netlify.app`)
+5. **Open in browser**
+   Visit `http://localhost:3000`
 
-### Environment Variables
+## 🤝 Contributing
 
-Make sure to set the following environment variable in Netlify:
-- `GEMINI_API_KEY`: Your Google Gemini API key
+We welcome contributions from developers, designers, and data activists!
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+**Together, we end child marriage.**
+[Visit the Campaign Website](https://childmarriagefreeworld.org)

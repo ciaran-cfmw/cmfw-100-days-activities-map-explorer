@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Antigravity Management Files
+AGENTS.md
+TASKS.md
+ARCHITECTURE.md
+DATA_SCHEMA.md
+CMS_SPECS.md
+SUPABASE_RULES.md
+CMS_ADMIN_RULES.md
+SUPABASE_MCP_SETUP.md
+THEME.md
+.agent/

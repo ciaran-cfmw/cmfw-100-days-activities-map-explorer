@@ -1,0 +1,53 @@
+backend:
+  name: git-gateway
+  branch: main
+local_backend: true
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "data"
+    label: "Data"
+    files:
+      - name: "activities"
+        label: "Campaign Activities"
+        file: "src/data/activities.json"
+        description: "Manage the list of campaign activities shown on the map"
+        fields:
+          - label: "Activities"
+            name: "items"
+            widget: "list"
+            fields:
+              - {label: "ID (Unique)", name: "id", widget: "string"}
+              - {label: "Title", name: "title", widget: "string"}
+              - {label: "Type", name: "type", widget: "select", options: ["School Pledge", "Community Awareness", "Faith Leader Action", "Gov Engagement"]}
+              - label: "Coordinates"
+                name: "coordinates"
+                widget: "list"
+                minimize_collapsed: true
+                field: {label: "Coord", name: "coord", widget: "number", value_type: "float"}
+                hint: "Format: [Longitude, Latitude]"
+              - {label: "Short Description", name: "description", widget: "text"}
+              - {label: "Full Content (Markdown)", name: "body", widget: "markdown", required: false}
+              - {label: "Featured Image", name: "image", widget: "image", required: false}
+              - {label: "Day Number", name: "day", widget: "number"}
+      - name: "countries"
+        label: "Countries"
+        file: "src/data/countries.json"
+        description: "Manage country-specific data and highlights"
+        fields:
+          - label: "Countries"
+            name: "items"
+            widget: "list"
+            fields:
+              - {label: "Country Name", name: "name", widget: "string"}
+              - {label: "ID (GeoJSON Name/ISO)", name: "id", widget: "string", hint: "Must match the Name property in GeoJSON (e.g., 'Brazil')"}
+              - {label: "Status", name: "status", widget: "select", options: ["Mobilizing", "Active", "Completed"], default: "Mobilizing"}
+              - {label: "Active Schools", name: "active_schools", widget: "number", default: 0}
+              - {label: "Total Pledges", name: "total_pledges", widget: "number", default: 0}
+              - label: "Highlights"
+                name: "highlights"
+                widget: "list"
+                field: {label: "Point", name: "point", widget: "string"}
+              - {label: "Content (Markdown)", name: "body", widget: "markdown"}

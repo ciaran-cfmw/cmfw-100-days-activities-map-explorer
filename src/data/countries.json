@@ -1,0 +1,17 @@
+{
+    "items": [
+        {
+            "name": "Brazil",
+            "id": "Brazil",
+            "status": "Mobilizing",
+            "active_schools": 156,
+            "total_pledges": 28124,
+            "highlights": [
+                "Community engagement initiatives",
+                "Educational outreach programs",
+                "Partnership with local organizations"
+            ],
+            "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.\n\n### Impact Goals\n\nWe aim to reach 50,000 students by the end of the year through our targeted school pledge programs."
+        }
+    ]
+}
